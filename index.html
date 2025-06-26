@@ -1,0 +1,382 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <link rel="icon" href="download.jpg" type="image/png" />
+  <title>Envios de E-mails | Méqui</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #f0f2f5;
+      padding: 30px;
+      color: #333;
+    }
+
+    .logo img{
+        width: auto;
+        height: auto;
+    }
+
+    textarea {
+      width: 100%;
+      padding: 10px;
+      margin-bottom: 20px;
+      box-sizing: border-box;
+      font-size: 14px;
+    }
+    button {
+      padding: 10px 16px;
+      margin-right: 10px;
+      background-color: #007bff;
+      color: white;
+      border: none;
+      font-size: 16px;
+      cursor: pointer;
+      border-radius: 4px;
+      margin-top: 10px;
+    }
+    #assunto, #output {
+      white-space: pre-wrap;
+      background: #fff;
+      padding: 15px;
+      margin-top: 10px;
+      border: 1px solid #ccc;
+      max-width: 600px;
+      margin-left: auto;
+      margin-right: auto;
+      border-radius: 6px;
+    }
+    #output {
+      color: initial;
+    }
+    .logos-container {
+      text-align: center;
+      margin-bottom: 20px;
+      display: flex;
+      justify-content: center;
+      gap: 20px;
+      align-items: center;
+    }
+    .logos-container img {
+      height: 40px;
+      vertical-align: middle;
+    }
+    ul.dados-lista {
+      list-style-type: none;
+      padding-left: 10px;
+      font-size: 14px;
+      line-height: 1.4;
+      margin: 1px 5px;
+    }
+
+    /* CSS Dropdown customizado */
+    .custom-select-wrapper {
+      position: relative;
+      width: 100%;
+      max-width: 600px;
+      user-select: none;
+      margin-bottom: 20px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+    .custom-select {
+      border: 1px solid #ccc;
+      border-radius: 4px;
+      background: white;
+      padding: 10px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      font-size: 14px;
+      color: #333;
+    }
+    .custom-select:after {
+      content: "▼";
+      font-size: 12px;
+      color: #555;
+      margin-left: 10px;
+    }
+    .custom-options {
+      position: absolute;
+      top: 100%;
+      left: 0;
+      right: 0;
+      background: white;
+      border: 1px solid #ccc;
+      border-top: none;
+      max-height: 180px;
+      overflow-y: auto;
+      z-index: 10;
+      display: none;
+      border-radius: 0 0 4px 4px;
+      font-size: 14px;
+      color: #333;
+    }
+    .custom-option {
+      padding: 10px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      transition: background 0.2s;
+    }
+    .custom-option:hover {
+      background: #e2e6ea;
+    }
+    .color-box {
+      width: 16px;
+      height: 16px;
+      border-radius: 3px;
+      flex-shrink: 0;
+    }
+  </style>
+</head>
+<body>
+
+    <div class="logo" style="display: flex; align-items: center; justify-content: center; gap: 20px;">
+        <img src="https://i.postimg.cc/SKzhXCD7/M-qui.png" alt="Logo 1" style="height: 40px;">
+        
+        <!-- Barra separadora -->
+        <div style="width: 1px; height: 40px; background-color: #ccc;"></div>
+        
+        <img src="https://i.postimg.cc/TPHKxVhV/elife.png" alt="Logo 2" style="height: 40px;">
+      </div>
+  <h2>Envios de E-mails | Méqui </h2>
+  <p>Cole a linha da planilha aqui:</p>
+  <textarea id="inputDados" rows="6" placeholder="Insira aqui"></textarea>
+
+  <p>Colar links de imagens (opcional, 1 por linha):</p>
+  <textarea id="inputImagens" rows="3" placeholder="Cole aqui o link da imagem por linha"></textarea>
+
+  <p>Escolha o modelo de assunto:</p>
+  
+  <!-- Dropdown customizado colorido substitui o select -->
+  <div class="custom-select-wrapper" tabindex="0" id="customSelectWrapper">
+    <div class="custom-select" id="customSelect">
+      <div>
+        <span class="color-box" id="selectedColor" style="background: #000;"></span>
+        <span id="selectedText">Selecione um assunto</span>
+      </div>
+    </div>
+    <div class="custom-options" id="customOptions">
+      <div class="custom-option" data-value="institucional" data-color="#000000">
+        <div class="color-box" style="background: #000000;"></div>
+        Elife: SAC Institucional
+      </div>
+      <div class="custom-option" data-value="institucional_critico" data-color="#FFC107">
+        <div class="color-box" style="background: #FFC107;"></div>
+        E-life: SAC Institucional Crítico
+      </div>
+      <div class="custom-option" data-value="delivery" data-color="#28A745">
+        <div class="color-box" style="background: #28A745;"></div>
+        E-life: SAC Delivery
+      </div>
+      <div class="custom-option" data-value="delivery_critico" data-color="#FFC107">
+        <div class="color-box" style="background: #FFC107;"></div>
+        E-life: SAC Delivery Crítico
+      </div>
+      <div class="custom-option" data-value="influenciador_10k_100k" data-color="#6F42C1">
+        <div class="color-box" style="background: #6F42C1;"></div>
+        E-life: SAC Delivery ou Institucional - Influenciador
+      </div>
+      <div class="custom-option" data-value="webcelebridade" data-color="#6F42C1">
+        <div class="color-box" style="background: #6F42C1;"></div>
+        E-life: SAC Delivery ou Institucional - Web Celebridade
+      </div>
+    </div>
+  </div>
+
+  <button onclick="gerarEmail()">Gerar E-mail</button>
+
+  <h3>Assunto do E-mail:</h3>
+  <div id="assunto"></div>
+  <button onclick="copiarAssunto()">Copiar Assunto</button>
+  <button onclick="remetente()">Copiar Destinatários</button>
+
+  <h3>Visualização do E-mail Renderizado:</h3>
+  <div id="output"></div>
+  <button onclick="copiarHtmlRenderizado()">Copiar E-mail Renderizado</button>
+
+  <script>
+    // Variável para guardar o valor selecionado
+    let selectedValue = null;
+
+    // Dropdown customizado: abrir/fechar e selecionar opção
+    const wrapper = document.getElementById('customSelectWrapper');
+    const select = document.getElementById('customSelect');
+    const options = document.getElementById('customOptions');
+    const selectedText = document.getElementById('selectedText');
+    const selectedColor = document.getElementById('selectedColor');
+
+    select.addEventListener('click', () => {
+      options.style.display = options.style.display === 'block' ? 'none' : 'block';
+    });
+
+    options.querySelectorAll('.custom-option').forEach(option => {
+      option.addEventListener('click', () => {
+        selectedValue = option.getAttribute('data-value');
+        const color = option.getAttribute('data-color');
+        const text = option.textContent.trim();
+
+        selectedText.textContent = text;
+        selectedColor.style.backgroundColor = color;
+
+        options.style.display = 'none';
+      });
+    });
+
+    // Fechar dropdown ao clicar fora
+    document.addEventListener('click', (e) => {
+      if (!wrapper.contains(e.target)) {
+        options.style.display = 'none';
+      }
+    });
+
+    // Controle com teclado (opcional)
+    wrapper.addEventListener('keydown', (e) => {
+      if (e.key === "Enter" || e.key === " ") {
+        e.preventDefault();
+        options.style.display = options.style.display === 'block' ? 'none' : 'block';
+      }
+      if (e.key === "Escape") {
+        options.style.display = 'none';
+      }
+    });
+
+    function gerarEmail() {
+      const entrada = document.getElementById('inputDados').value.trim().split('\t');
+      const imagens = document.getElementById('inputImagens').value.trim().split('\n').filter(x => x.trim());
+      while (entrada.length < 13) entrada.push('--');
+
+      const [nome, user, pedido, assuntoTexto, telefone, cpf, email, relato, canal, , , , data] = entrada;
+
+      let prefixoAssunto = "";
+
+      switch (selectedValue) {
+        case 'institucional':
+          prefixoAssunto = "Elife: SAC Institucional";
+          break;
+        case 'institucional_critico':
+          prefixoAssunto = "E-life: SAC Institucional Crítico";
+          break;
+        case 'delivery':
+          prefixoAssunto = "E-life: SAC Delivery";
+          break;
+        case 'delivery_critico':
+          prefixoAssunto = "E-life: SAC Delivery Crítico";
+          break;
+        case 'influenciador_10k_100k':
+          prefixoAssunto = "E-life: SAC Delivery ou Institucional - Influenciador";
+          break;
+        case 'webcelebridade':
+          prefixoAssunto = "E-life: SAC Delivery ou Institucional - Web Celebridade";
+          break;
+        default:
+          alert("Por favor, selecione um modelo de assunto.");
+          return;
+      }
+
+      const assuntoEmail = `${prefixoAssunto} - ${nome} - ${assuntoTexto}`;
+
+      const html = `
+<div style="font-family: Arial, sans-serif; color: #333; max-width: 600px; margin: auto; background: #fff; padding: 20px; border: 1px solid #ddd; border-radius: 6px;">
+  <div class="logos-container">
+    <img src="https://elife.com.br/wp-content/uploads/2019/01/2.png" alt="Logo Elife">
+    <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/3/36/McDonald%27s_Golden_Arches.svg/640px-McDonald%27s_Golden_Arches.svg.png" alt="Logo M">
+  </div>
+
+  <h3 style="text-align: center; color: #004085; margin-bottom: 10px;">RELATO</h3>
+  <p style="text-align: center; font-size: 14px; line-height: 1.5; margin-top: 0; margin-bottom: 20px;">${relato}</p>
+
+  ${imagens.length > 0 ? `
+    <hr style="border: none; border-top: 1px solid #ddd; margin: 20px 0;">
+    <h3 style="text-align: center; color: #004085; margin-bottom: 10px;">ANEXOS</h3>
+    <div style="text-align: center;">
+      ${imagens.map(src => `<img src="${src}" style="max-width: 100%; margin: 5px; vertical-align: middle;">`).join('')}
+    </div>
+  ` : ''}
+
+  <hr style="border: none; border-top: 1px solid #ddd; margin: 20px 0;">
+
+  <h3 style="text-align: center; color: #004085; margin-bottom: 10px;">DADOS</h3>
+  <ul class="dados-lista">
+    <li><b>Nome:</b> ${nome}</li>
+    <li><b>Telefone:</b> ${telefone}</li>
+    <li><b>CPF:</b> ${cpf}</li>
+    <li><b>E-mail:</b> ${email}</li>
+    <li><b>Nº do Pedido:</b> ${pedido}</li>
+    <li><b>Endereço:</b> --</li>
+    <li><b>Canal:</b> ${canal}</li>
+    <li><b>User:</b> ${user !== '--' ? '@' + user : '--'}</li>
+    <li><b>Data do último contato:</b> ${data}</li>
+  </ul>
+</div>
+      `;
+
+      document.getElementById('output').innerHTML = html;
+      document.getElementById('assunto').textContent = assuntoEmail;
+    }
+
+    function copiarHtmlRenderizado() {
+      const element = document.getElementById('output');
+      if (!element.innerHTML.trim()) {
+        alert("Gere o e-mail primeiro!");
+        return;
+      }
+
+      const tempDiv = document.createElement('div');
+      tempDiv.style.position = 'absolute';
+      tempDiv.style.left = '-9999px';
+      tempDiv.innerHTML = element.innerHTML;
+      document.body.appendChild(tempDiv);
+
+      const range = document.createRange();
+      range.selectNodeContents(tempDiv);
+      const selection = window.getSelection();
+      selection.removeAllRanges();
+      selection.addRange(range);
+
+      try {
+        if (document.execCommand('copy')) {
+          alert('Conteúdo renderizado copiado!');
+        } else {
+          alert('Não foi possível copiar.');
+        }
+      } catch (err) {
+        alert('Erro ao copiar: ' + err);
+      }
+
+      selection.removeAllRanges();
+      document.body.removeChild(tempDiv);
+    }
+
+    function copiarAssunto() {
+      const texto = document.getElementById('assunto').textContent;
+      if (!texto) {
+        alert("Gere o assunto primeiro!");
+        return;
+      }
+      navigator.clipboard.writeText(texto)
+        .then(() => alert("Assunto copiado!"))
+        .catch(err => alert("Erro: " + err));
+    }
+
+    function remetente() {
+      const emails = [
+        "rrss.playstoresBR@br.mcd.com",
+        "pereira.3634@teleperformance.com.br",
+        "timemequi@elife.com.br"
+      ];
+
+      const texto = emails.join(", ");
+
+      navigator.clipboard.writeText(texto)
+        .then(() => alert("Destinatários copiados: " + texto))
+        .catch(err => alert("Erro ao copiar: " + err));
+    }
+
+  </script>
+
+</body>
+</html>
