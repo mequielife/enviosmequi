@@ -1,0 +1,407 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Envios de E-mails | Méqui</title>
+  <link rel="icon" href="download.jpg" type="image/png" />
+  <style>
+    :root {
+      --primary:#007bff;
+      --bg1:#2B6CB0; --bg2:#3182CE;
+      --card:#fff;
+      --muted:#666;
+      --border:#ddd;
+      --title:#004085;
+      --black:#000000;
+      --yellow:#FFC107;
+      --green:#28A745;
+      --purple:#6F42C1;
+      --green-light:#229A00; /* novo verde claro */
+    }
+    *{box-sizing:border-box}
+    body{font-family:Arial, sans-serif;background:linear-gradient(135deg,var(--bg1),var(--bg2));padding:30px;color:#333}
+    .form-card{background:var(--card);padding:32px;border-radius:14px;max-width:900px;margin:0 auto;box-shadow:0 10px 25px rgba(0,0,0,.1)}
+    h2{margin:24px 0 20px 0;text-align:center}
+    textarea,input,button{font-size:15px}
+    textarea{width:100%;padding:12px 14px;margin-bottom:16px;border-radius:8px;border:1px solid #ccc;background:#f7f5ff;color:#333}
+    textarea:focus{outline:none;border-color:#6C63FF;background:#fff}
+    .row{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+    .row > div{min-width:0}
+    button{padding:10px 14px;border:0;border-radius:6px;background:var(--primary);color:#fff;cursor:pointer}
+    .muted{color:var(--muted);font-size:13px;margin:-8px 0 10px}
+    .logos{display:flex;align-items:center;justify-content:center;gap:18px;margin-bottom:6px}
+    .logos img{height:40px}
+    .sep{width:1px;height:40px;background:#ccc}
+    #output,#assunto{white-space:pre-wrap;background:#fff;padding:14px;border:1px solid #ccc;border-radius:8px;margin-top:10px}
+    .actions{display:flex;flex-wrap:wrap;gap:10px;margin:8px 0 20px}
+    .pill{display:inline-flex;align-items:center;gap:8px;padding:10px;border:1px dashed #b9c; border-radius:10px;background:#faf7ff}
+    .drop{border:2px dashed #9aa7bf;border-radius:10px;padding:16px;background:#f9fbff;min-height:120px;display:flex;flex-direction:column;gap:10px;align-items:center;justify-content:center;text-align:center}
+    .thumbs{display:flex;flex-wrap:wrap;gap:10px}
+    .thumb{position:relative;display:flex;flex-direction:column;align-items:center;gap:6px}
+    .thumb img{height:80px;border-radius:8px;border:1px solid #ddd}
+    .thumb .btns{display:flex;gap:6px}
+    .thumb .btns button{padding:6px 10px;font-size:13px}
+    .note{font-size:13px;color:#444;background:#f7f7f7;border:1px solid #eee;padding:10px;border-radius:8px}
+    .label{font-size:14px;margin:8px 0 4px;font-weight:bold}
+    .title{color:var(--title);text-align:center}
+    .custom-select-wrapper{position:relative;width:100%;user-select:none;margin:10px 0 6px}
+    .custom-select{border:1px solid #ccc;border-radius:8px;background:#fff;padding:10px;cursor:pointer;display:flex;align-items:center;justify-content:space-between;font-size:14px;color:#333}
+    .custom-select::after{content:"▼";font-size:12px;color:#555;margin-left:10px}
+    .color-box{width:16px;height:16px;border-radius:3px;display:inline-block;vertical-align:middle;margin-right:8px}
+    .selected{display:flex;align-items:center;gap:8px}
+    .options{position:absolute;top:100%;left:0;right:0;background:#fff;border:1px solid #ccc;border-top:none;max-height:200px;overflow:auto;z-index:1000;display:none;border-radius:0 0 8px 8px}
+
+    .opt{padding:10px;display:flex;align-items:center;gap:10px;cursor:pointer}
+    .opt:hover{background:#eef2ff}
+    @media (max-width:768px){.row{grid-template-columns:1fr} .logos{flex-direction:column}.sep{display:none}}
+
+    /* Toasts (pop-up lateral inferior direito) */
+    #toast-container{position:fixed;right:20px;bottom:20px;display:flex;flex-direction:column-reverse;gap:10px;z-index:9999}
+    .toast{padding:12px 16px;border-radius:10px;box-shadow:0 6px 20px rgba(0,0,0,.15);color:#fff;min-width:220px;max-width:320px;opacity:0;transform:translateY(10px);animation:toastIn .25s ease forwards}
+    .toast.ok{background:#28a745}
+    .toast.erro{background:#dc3545}
+    .toast.info{background:#0069d9}
+    @keyframes toastIn{to{opacity:1;transform:translateY(0)}}
+    @keyframes toastOut{to{opacity:0;transform:translateY(10px)}}
+  </style>
+</head>
+<body>
+  <div class="form-card">
+    <div class="logos">
+      <img src="https://logodownload.org/wp-content/uploads/2014/04/mcdonalds-logo-1-1.png" alt="Méqui">
+      <div class="sep"></div>
+      <img src="https://elife.com.br/wp-content/uploads/2019/01/2.png" alt="E.life">
+    </div>
+    <h2 class="title">Envios de E-mails | Méqui</h2>
+
+    <div class="row">
+      <div>
+        <div class="label">Informações (Cole aqui as Informações)</div>
+        <textarea id="inputDados" rows="6" placeholder="Cole aqui a linha da planilha (13 colunas)"></textarea>
+        <div class="muted">Ordem esperada: Nome, User, Pedido, Assunto, Telefone, CPF, E-mail, Relato, Canal, Endereço, Cidade, Estado, Data.</div>
+      </div>
+      <div>
+        <div class="label">Imagens (cole ou arraste aqui)</div>
+        <div id="drop" class="drop">
+          <div><strong>Cole (Ctrl+V) ou arraste suas imagens</strong></div>
+          <div class="muted">As imagens ficam só no seu navegador.</div>
+        </div>
+        <div id="thumbs" class="thumbs"></div>
+        <div class="pill">Dica: depois de gerar, use os botões "Copiar" nas miniaturas e cole no rascunho do e-mail.</div>
+      </div>
+    </div>
+
+    <div class="label">Modelo de Assunto</div>
+    <div class="custom-select-wrapper" id="assuntoWrap" tabindex="0">
+      <div class="custom-select" id="assuntoSelect">
+        <div class="selected">
+          <span class="color-box" id="assuntoColor" style="background:var(--black)"></span>
+          <span id="assuntoText">Selecione um assunto</span>
+        </div>
+      </div>
+      <div class="options" id="assuntoOptions">
+        <div class="opt" data-value="Elife: SAC Institucional" data-color="var(--black)">
+          <span class="color-box" style="background:var(--black)"></span> Elife: SAC Institucional
+        </div>
+        <div class="opt" data-value="E-life: SAC Institucional Crítico" data-color="var(--yellow)">
+          <span class="color-box" style="background:var(--yellow)"></span> E-life: SAC Institucional Crítico
+        </div>
+        <div class="opt" data-value="E-life: SAC Delivery" data-color="var(--green)">
+          <span class="color-box" style="background:var(--green)"></span> E-life: SAC Delivery
+        </div>
+        <div class="opt" data-value="E-life: SAC Delivery Crítico" data-color="var(--yellow)">
+          <span class="color-box" style="background:var(--yellow)"></span> E-life: SAC Delivery Crítico
+        </div>
+        <div class="opt" data-value="E-life: SAC Delivery ou Institucional - Influenciador" data-color="var(--purple)">
+          <span class="color-box" style="background:var(--purple)"></span> E-life: SAC Delivery ou Institucional - Influenciador
+        </div>
+        <div class="opt" data-value="E-life: SAC Delivery ou Institucional - Web Celebridade" data-color="var(--purple)">
+          <span class="color-box" style="background:var(--purple)"></span> E-life: SAC Delivery ou Institucional - Web Celebridade
+        </div>
+        <div class="opt" data-value="Reanálise Estorno Mídias Sociais" data-color="var(--green-light)">
+          <span class="color-box" style="background:var(--green-light)"></span> Reanálise Estorno Mídias Sociais
+        </div>
+      </div>
+    </div>
+
+    <div class="actions">
+      <button id="gerarBtn" type="button">Gerar E-mail</button>
+      <button id="copiarDestBtn" type="button">Copiar Destinatários</button>
+      <button id="copiarAssuntoBtn" type="button">Copiar Assunto</button>
+      <button id="copiarHtmlBtn" type="button">Copiar Corpo</button>
+      
+    </div>
+
+    <div class="label">Assunto do E-mail</div>
+    <div id="assunto"></div>
+
+    <div class="label">Prévia (no site)</div>
+    <div id="output"></div>
+
+    <p class="note">
+      <strong>Envio sem expirar:</strong><br>
+      1) Copie o corpo e cole no rascunho do Gmail/Outlook.<br>
+      2) Clique em "Copiar" em cada miniatura aqui na página e cole a imagem no rascunho nos locais marcados.<br>
+      3) As imagens ficam inline no e-mail e não expiram.
+    </p>
+  </div>
+
+  <!-- Toast container -->
+  <div id="toast-container"></div>
+
+  <script>
+    // ===== Toasts
+    function showToast(msg, tipo='ok', ms=3800){
+      const cont = document.getElementById('toast-container');
+      const el = document.createElement('div');
+      el.className = 'toast ' + (tipo || 'ok');
+      el.textContent = msg;
+      cont.appendChild(el);
+      // auto hide
+      setTimeout(()=>{
+        el.style.animation = 'toastOut .25s ease forwards';
+        setTimeout(()=> el.remove(), 260);
+      }, ms);
+    }
+
+    // ===== Estado de imagens
+    const imagens = []; // {name, type, dataUrl, blob}
+    const drop = document.getElementById('drop');
+    const thumbs = document.getElementById('thumbs');
+
+    function renderThumbs(){
+      thumbs.innerHTML = '';
+      imagens.forEach((img, i) => {
+        const d = document.createElement('div');
+        d.className = 'thumb';
+        const el = document.createElement('img');
+        el.src = img.dataUrl;
+        el.alt = img.name || `imagem_${i+1}`;
+        const btns = document.createElement('div');
+        btns.className = 'btns';
+
+        const copyBtn = document.createElement('button');
+        copyBtn.textContent = 'Copiar';
+        copyBtn.onclick = async () => {
+          try{
+            await navigator.clipboard.write([ new ClipboardItem({ [img.type]: img.blob }) ]);
+            showToast('Imagem copiada! Vá ao rascunho e cole (Ctrl+V).', 'ok');
+          }catch(e){
+            console.error(e);
+            showToast('Não deu para copiar automaticamente. Clique na miniatura, Ctrl+C e cole no rascunho.', 'erro');
+          }
+        };
+
+        const rm = document.createElement('button');
+        rm.textContent = 'Remover';
+        rm.style.background = '#dc3545';
+        rm.onclick = () => { imagens.splice(i,1); renderThumbs(); };
+
+        btns.appendChild(copyBtn);
+        btns.appendChild(rm);
+
+        d.appendChild(el);
+        d.appendChild(btns);
+        thumbs.appendChild(d);
+      });
+    }
+
+    async function fileToDataUrl(file){
+      return new Promise((resolve,reject)=>{
+        const r = new FileReader();
+        r.onload = () => resolve(r.result);
+        r.onerror = reject;
+        r.readAsDataURL(file);
+      });
+    }
+    function dataURLtoBlob(dataUrl){
+      const [meta, b64] = dataUrl.split(',');
+      const mime = /data:(.*?);base64/.exec(meta)?.[1] || 'application/octet-stream';
+      const bin = atob(b64);
+      const len = bin.length;
+      const buf = new Uint8Array(len);
+      for (let i=0;i<len;i++) buf[i] = bin.charCodeAt(i);
+      return new Blob([buf], {type:mime});
+    }
+    async function addFiles(files){
+      for (const f of files){
+        if (!f.type.startsWith('image/')) continue;
+        const dataUrl = await fileToDataUrl(f);
+        imagens.push({
+          name: f.name || `imagem-${Date.now()}.png`,
+          type: f.type || 'image/png',
+          dataUrl,
+          blob: dataURLtoBlob(dataUrl)
+        });
+      }
+      renderThumbs();
+      showToast('Imagens adicionadas à prévia.', 'info');
+    }
+    drop.addEventListener('dragover', e => { e.preventDefault(); drop.style.background = '#eef4ff'; });
+    drop.addEventListener('dragleave', e => { drop.style.background = '#f9fbff'; });
+    drop.addEventListener('drop', async e => {
+      e.preventDefault(); drop.style.background = '#f9fbff';
+      const files = e.dataTransfer.files;
+      await addFiles(files);
+    });
+    document.addEventListener('paste', async (e) => {
+      const items = e.clipboardData?.items || [];
+      const files = [];
+      for (const it of items){
+        if (it.type && it.type.startsWith('image/')){
+          const f = it.getAsFile();
+          if (f) files.push(f);
+        }
+      }
+      if (files.length){
+        await addFiles(files);
+      }
+    });
+
+    // ===== Assunto com seletor colorido
+    let selectedValue = null;
+    const wrap = document.getElementById('assuntoWrap');
+    const sel = document.getElementById('assuntoSelect');
+    const opts = document.getElementById('assuntoOptions');
+    const txt = document.getElementById('assuntoText');
+    const colorBox = document.getElementById('assuntoColor');
+
+    sel.addEventListener('click', () => {
+      opts.style.display = opts.style.display === 'block' ? 'none' : 'block';
+    });
+    opts.querySelectorAll('.opt').forEach(o => {
+      o.addEventListener('click', () => {
+        selectedValue = o.getAttribute('data-value');
+        const color = o.getAttribute('data-color') || 'var(--black)';
+        txt.textContent = selectedValue;
+        colorBox.style.background = color;
+        opts.style.display = 'none';
+        showToast('Modelo de assunto selecionado.', 'ok');
+      });
+    });
+    document.addEventListener('click', (e) => {
+      if (!wrap.contains(e.target)) opts.style.display = 'none';
+    });
+
+    // ===== Geração de e-mail
+    function gerarEmail(){
+      const entrada = document.getElementById('inputDados').value.trim().split('\t');
+      while (entrada.length < 13) entrada.push('--');
+      if (entrada.length !== 13){
+        showToast(`⚠️ Esperado 13 campos, mas recebi ${entrada.length}.`, 'erro');
+        return;
+      }
+      if (!selectedValue){
+        showToast('Selecione o modelo de assunto.', 'erro');
+        return;
+      }
+      const [nome, user, pedido, assuntoTexto, telefone, cpf, email, relato, canal, endereco, cidade, estado, data] = entrada;
+      const REANALISE = 'Reanálise Estorno Mídias Sociais';
+      // limpa o 4º campo se ele vier com "Reanálise..."
+      const assuntoTextoLimpo = (assuntoTexto || '').trim() === REANALISE ? '' : (assuntoTexto || '').trim();
+
+      let assuntoEmail;
+      if (selectedValue === REANALISE) {
+        // Padrão novo: frase fixa + nome completo (sem usar o 4º campo)
+        assuntoEmail = `${REANALISE} - ${nome}`;
+      } else {
+        // Para os demais modelos: usa o 4º campo, mas só se não estiver "Reanálise..."
+        assuntoEmail = `${selectedValue} - ${nome}${assuntoTextoLimpo ? ' - ' + assuntoTextoLimpo : ''}`;
+      }
+
+      document.getElementById('assunto').textContent = assuntoEmail;
+
+
+      const blocoMarcador = imagens.length ? `
+        <hr style="border:none;border-top:1px solid #ddd;margin:20px 0;">
+        <h3 style="text-align:center;color:#004085;margin-bottom:10px;">ANEXOS</h3>
+        <p style="text-align:center;font-size:13px;color:#666;">
+          (COLE AS IMAGENS AQUI: volte nesta página, clique em <strong>Copiar</strong> na miniatura e cole no rascunho. Repita na ordem da prévia.)
+        </p>` : '';
+
+      const corpo = `
+  <div style="font-family: Arial, sans-serif; color: #333; max-width: 600px; margin: auto; background: #fff; padding: 20px; border: 1px solid #ddd; border-radius: 6px;">
+    <table align="center" cellpadding="0" cellspacing="0" border="0">
+      <tr>
+        <td style="padding-right: 15px;">
+          <img src="https://logodownload.org/wp-content/uploads/2014/04/mcdonalds-logo-1-1.png" alt="Logo Méqui" style="height: 40px;">
+        </td>
+        <td style="width: 1px; background-color: #ccc;"></td>
+        <td style="padding-left: 15px;">
+          <img src="https://elife.com.br/wp-content/uploads/2019/01/2.png" alt="Logo Elife" style="height: 40px;">
+        </td>
+      </tr>
+    </table>
+
+    <h3 style="text-align: center; color: #004085; margin-bottom: 10px;">RELATO</h3>
+    <p style="text-align: center; font-size: 14px; line-height: 1.5; margin-top: 0; margin-bottom: 20px;">${relato}</p>
+
+    ${blocoMarcador}
+
+    <hr style="border:none;border-top:1px solid #ddd;margin:20px 0;">
+
+    <h3 style="text-align: center; color: #004085; margin-bottom: 10px;">DADOS</h3>
+    <ul style="list-style-type: none; padding-left: 10px; font-size: 14px; line-height: 1.4; margin: 1px 5px;">
+      <li><b>Nome:</b> ${nome}</li>
+      <li><b>Telefone:</b> ${telefone}</li>
+      <li><b>CPF:</b> ${cpf}</li>
+      <li><b>E-mail:</b> ${email}</li>
+      <li><b>Nº do Pedido:</b> ${pedido}</li>
+      <li><b>Endereço:</b> ${endereco}, ${cidade} - ${estado}</li>
+      <li><b>Canal:</b> ${canal}</li>
+      <li><b>User:</b> ${user !== '--' ? '@' + user : '--'}</li>
+      <li><b>Data do último contato:</b> ${data}</li>
+    </ul>
+  </div>
+      `;
+
+      document.getElementById('output').innerHTML = corpo;
+      window.__corpoLimpo = corpo;
+      showToast('E-mail gerado!', 'ok');
+    }
+
+    // Copiar Assunto
+    function copiarAssunto(){
+      const a = document.getElementById('assunto').textContent;
+      if (!a) return showToast('Gere o e-mail primeiro.', 'erro');
+      navigator.clipboard.writeText(a).then(()=>showToast('Assunto copiado!', 'ok'));
+    }
+    // Copiar Corpo
+    function copiarCorpo(){
+      if (!window.__corpoLimpo) return showToast('Gere o e-mail primeiro.', 'erro');
+      const blob = new Blob([window.__corpoLimpo], {type:'text/html'});
+      const data = [new ClipboardItem({ 'text/html': blob })];
+      navigator.clipboard.write(data).then(()=>{
+        showToast('Corpo copiado! Cole no Gmail/Outlook, depois cole as imagens.', 'ok');
+      }).catch(()=>{
+        const ta = document.createElement('textarea');
+        ta.value = window.__corpoLimpo;
+        document.body.appendChild(ta);
+        ta.select();
+        document.execCommand('copy');
+        document.body.removeChild(ta);
+        showToast('Corpo copiado como texto. Se perder formatação, cole em modo rich.', 'info');
+      });
+    }
+    // Copiar Destinatários
+    function copiarDestinatarios(){
+      const emails = [
+        "rrss.playstoresBR@br.mcd.com",
+        "timemequi@elife.com.br",
+        "Carvalho.2095@teleperformance.com",
+        "Carmo.296@teleperformance.com.br",
+        "Souza.5777@teleperformance.com.br",
+        "almeida.2183@teleperformance.com.br"
+      ];
+      const texto = emails.join(", ");
+      navigator.clipboard.writeText(texto).then(()=>showToast('Destinatários copiados!', 'ok'));
+    }
+
+    document.getElementById('gerarBtn').addEventListener('click', gerarEmail);
+    document.getElementById('copiarAssuntoBtn').addEventListener('click', copiarAssunto);
+    document.getElementById('copiarHtmlBtn').addEventListener('click', copiarCorpo);
+    document.getElementById('copiarDestBtn').addEventListener('click', copiarDestinatarios);
+  </script>
+</body>
+</html>
